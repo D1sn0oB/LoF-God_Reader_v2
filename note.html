@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>God Reader - 笔记</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f8f9ff;
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #409eff 0%, #ff80ab 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(64, 158, 255, 0.2);
+        }
+        
+        .logo-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+        
+        .logo-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #409eff 0%, #ff80ab 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .logo-subtext {
+            font-size: 12px;
+            color: #999;
+            font-style: italic;
+            font-family: 'Georgia', serif;
+            letter-spacing: 0.5px;
+        }
+        
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .back-btn {
+            background: linear-gradient(135deg, #409eff 0%, #ff80ab 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(64, 158, 255, 0.2);
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(64, 158, 255, 0.3);
+        }
+        
+        .save-btn {
+            background: linear-gradient(135deg, #409eff 0%, #ff80ab 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(64, 158, 255, 0.2);
+        }
+        
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(64, 158, 255, 0.3);
+        }
+        
+        .book-info {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .book-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .book-meta {
+            font-size: 14px;
+            color: #999;
+        }
+        
+        .note-editor {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            min-height: 500px;
+        }
+        
+        .note-content {
+            width: 100%;
+            min-height: 500px;
+            border: none;
+            outline: none;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-size: 16px;
+            line-height: 1.8;
+            color: #333;
+            background: transparent;
+        }
+        
+        .note-content:empty::before {
+            content: '在这里输入你的笔记...';
+            color: #ccc;
+            pointer-events: none;
+        }
+        
+        .editor-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .control-group label {
+            font-size: 14px;
+            color: #666;
+            white-space: nowrap;
+        }
+        
+        .control-group input[type="color"] {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: transparent;
+        }
+        
+        .control-group input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+            border-radius: 8px;
+        }
+        
+        .control-group input[type="color"]::-webkit-color-swatch {
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+        }
+        
+        .control-group select {
+            padding: 6px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .control-group select:hover {
+            border-color: #409eff;
+            box-shadow: 0 2px 4px rgba(64, 158, 255, 0.1);
+        }
+        
+
+        
+        .save-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #409eff 0%, #ff80ab 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(64, 158, 255, 0.2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .save-status.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332-.477 4.5-1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332-.477-4.5-1.253"></path>
+                    </svg>
+                </div>
+                <div class="logo-content">
+                    <div class="logo-text">God Reader</div>
+                    <div class="logo-subtext">笔记</div>
+                </div>
+            </div>
+            <div class="header-buttons">
+                <button class="save-btn" onclick="saveNote()">保存笔记</button>
+                <button class="back-btn" onclick="goBack()">返回阅读器</button>
+            </div>
+        </div>
+        
+        <div class="book-info" id="book-info">
+            <div class="book-title" id="book-title">加载中...</div>
+            <div class="book-meta" id="book-meta"></div>
+        </div>
+        
+        <div class="note-editor">
+            <div class="editor-controls">
+                <div class="control-group">
+                    <label for="color-picker">文字颜色：</label>
+                    <input type="color" id="color-picker" value="#333333">
+                </div>
+                <div class="control-group">
+                    <label for="font-size">字体大小：</label>
+                    <select id="font-size">
+                        <option value="1">8px</option>
+                        <option value="2">10px</option>
+                        <option value="3">12px</option>
+                        <option value="4" selected>14px</option>
+                        <option value="5">18px</option>
+                        <option value="6">24px</option>
+                        <option value="7">36px</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="font-family">字体：</label>
+                    <select id="font-family">
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="'Times New Roman', serif">Times New Roman</option>
+                        <option value="'Courier New', monospace">Courier New</option>
+                        <option value="'Microsoft YaHei', sans-serif" selected>微软雅黑</option>
+                        <option value="'SimSun', serif">宋体</option>
+                        <option value="'SimHei', sans-serif">黑体</option>
+                        <option value="'KaiTi', serif">楷书</option>
+                    </select>
+                </div>
+
+            </div>
+            <div id="note-content" class="note-content" contenteditable="true"></div>
+        </div>
+    </div>
+    
+    <div class="save-status" id="save-status">保存成功！</div>
+    
+    <script>
+        let currentBook = null;
+        let noteContent = '';
+        let autoSaveTimer = null;
+        let currentColor = '#333333';
+        let currentFontSize = '4';
+        let currentFontFamily = "'Microsoft YaHei', sans-serif";
+        
+        function init() {
+            loadCurrentBook();
+            loadNote();
+            loadColor();
+            loadFontSettings();
+            setupAutoSave();
+            setupColorPicker();
+            setupFontControls();
+            setupContentEditable();
+        }
+        
+        function loadCurrentBook() {
+            const bookData = localStorage.getItem('godReaderCurrentBook');
+            if (bookData) {
+                currentBook = JSON.parse(bookData);
+                document.getElementById('book-title').textContent = currentBook.title;
+                document.getElementById('book-meta').textContent = `格式: ${currentBook.format.toUpperCase()}`;
+            } else {
+                document.getElementById('book-title').textContent = '未找到书籍信息';
+            }
+        }
+        
+        function loadNote() {
+            const bookId = currentBook ? currentBook.id || currentBook.title : 'unknown';
+            const noteKey = `godReaderNote_${bookId}`;
+            const noteData = localStorage.getItem(noteKey);
+            
+            if (noteData) {
+                noteContent = noteData;
+                document.getElementById('note-content').innerHTML = noteContent;
+                console.log('加载笔记成功');
+            } else {
+                noteContent = '';
+                document.getElementById('note-content').innerHTML = '';
+                console.log('暂无笔记');
+            }
+        }
+        
+        function saveNote() {
+            const content = document.getElementById('note-content').innerHTML;
+            
+            const bookId = currentBook ? currentBook.id || currentBook.title : 'unknown';
+            const noteKey = `godReaderNote_${bookId}`;
+            
+            localStorage.setItem(noteKey, content);
+            noteContent = content;
+            
+            console.log('保存笔记成功');
+            
+            showSaveStatus();
+        }
+        
+        function setupAutoSave() {
+            const contentDiv = document.getElementById('note-content');
+            
+            contentDiv.addEventListener('input', function() {
+                clearTimeout(autoSaveTimer);
+                autoSaveTimer = setTimeout(() => {
+                    saveNote();
+                }, 1000);
+            });
+        }
+        
+        function showSaveStatus() {
+            const status = document.getElementById('save-status');
+            status.classList.add('show');
+            
+            setTimeout(() => {
+                status.classList.remove('show');
+            }, 2000);
+        }
+        
+        function loadColor() {
+            const bookId = currentBook ? currentBook.id || currentBook.title : 'unknown';
+            const colorKey = `godReaderNoteColor_${bookId}`;
+            const savedColor = localStorage.getItem(colorKey);
+            
+            if (savedColor) {
+                currentColor = savedColor;
+                document.getElementById('color-picker').value = currentColor;
+            }
+        }
+        
+        function saveColor(color) {
+            const bookId = currentBook ? currentBook.id || currentBook.title : 'unknown';
+            const colorKey = `godReaderNoteColor_${bookId}`;
+            localStorage.setItem(colorKey, color);
+            currentColor = color;
+        }
+        
+        function setupColorPicker() {
+            const colorPicker = document.getElementById('color-picker');
+            
+            colorPicker.addEventListener('change', function() {
+                const selectedColor = this.value;
+                currentColor = selectedColor;
+                saveColor(selectedColor);
+                // 设置当前选区的样式
+                document.execCommand('foreColor', false, selectedColor);
+            });
+        }
+        
+        function loadFontSettings() {
+            const bookId = currentBook ? currentBook.id || currentBook.title : 'unknown';
+            const fontSizeKey = `godReaderNoteFontSize_${bookId}`;
+            const fontFamilyKey = `godReaderNoteFontFamily_${bookId}`;
+            
+            const savedFontSize = localStorage.getItem(fontSizeKey);
+            const savedFontFamily = localStorage.getItem(fontFamilyKey);
+            
+            if (savedFontSize) {
+                currentFontSize = savedFontSize;
+                document.getElementById('font-size').value = currentFontSize;
+            }
+            
+            if (savedFontFamily) {
+                currentFontFamily = savedFontFamily;
+                document.getElementById('font-family').value = currentFontFamily;
+            }
+        }
+        
+        function saveFontSettings() {
+            const bookId = currentBook ? currentBook.id || currentBook.title : 'unknown';
+            const fontSizeKey = `godReaderNoteFontSize_${bookId}`;
+            const fontFamilyKey = `godReaderNoteFontFamily_${bookId}`;
+            
+            localStorage.setItem(fontSizeKey, currentFontSize);
+            localStorage.setItem(fontFamilyKey, currentFontFamily);
+        }
+        
+        function setupFontControls() {
+            // 字体大小控制
+            const fontSizeSelect = document.getElementById('font-size');
+            fontSizeSelect.addEventListener('change', function() {
+                currentFontSize = this.value;
+                document.execCommand('fontSize', false, currentFontSize);
+                saveFontSettings();
+            });
+            
+            // 字体类型控制
+            const fontFamilySelect = document.getElementById('font-family');
+            fontFamilySelect.addEventListener('change', function() {
+                currentFontFamily = this.value;
+                document.execCommand('fontName', false, currentFontFamily);
+                saveFontSettings();
+            });
+        }
+        
+
+        
+        function setupContentEditable() {
+            const contentDiv = document.getElementById('note-content');
+            
+            // 当获取焦点时，应用当前设置
+            contentDiv.addEventListener('focus', function() {
+                document.execCommand('foreColor', false, currentColor);
+                document.execCommand('fontSize', false, currentFontSize);
+                document.execCommand('fontName', false, currentFontFamily);
+            });
+            
+            // 当选区变化时，应用当前设置
+            contentDiv.addEventListener('click', function() {
+                document.execCommand('foreColor', false, currentColor);
+                document.execCommand('fontSize', false, currentFontSize);
+                document.execCommand('fontName', false, currentFontFamily);
+            });
+            
+            // 当输入开始时，应用当前设置
+            contentDiv.addEventListener('keydown', function() {
+                document.execCommand('foreColor', false, currentColor);
+                document.execCommand('fontSize', false, currentFontSize);
+                document.execCommand('fontName', false, currentFontFamily);
+            });
+        }
+        
+        function goBack() {
+            window.location.href = 'reader.html';
+        }
+        
+        init();
+    </script>
+</body>
+</html>
